@@ -111,198 +111,359 @@
             </div>
 
 
-            <h2 class="text-[#111418] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">
-             주변 지원 센터
-            </h2>
+            <h2 class="text-[#111418] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">
+             주변 지원 센터
+            </h2>
 
-                        <div id="map" class="mx-4 rounded-xl border border-[#dbe0e6]" style="height: 420px;"></div>
+<!-- 상태 표시 영역 -->
+            <div id="status" class="mx-4 mb-3 p-3 rounded-lg bg-blue-50 border border-blue-200">
+              <p class="text-sm text-blue-700">지도를 로딩 중입니다...</p>
+            </div>
 
-                        <div id="center-list" class="px-4 py-3 grid gap-3"></div>
+            <div id="map" class="mx-4 rounded-xl border border-[#dbe0e6]" style="height: 420px;"></div>
 
-            <div class="flex px-4 py-3">
-              <div
-                class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl object-cover"
-                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDzH3wSNKos48dF4gJKVP_tdol_zkb6KCtAKgmIeecUvK-aUe9Pq5a45bTJomNi--soSDjN7D-VDMyI_YrqAUMmvuuOvD0ppbwROqm9OkOp2ZEmJNF73indqoIwB6CCEgoeV3-k4KLOLzOIMcQBSAFMySbiRT8m8KrgnMsrMVbp_n3lkLrglOWTwmIO3POUat8k4wv77hIAz-OaWod1rYU9pF2QzMwPTfmM8373ayAcmEV84_1DbmOXcR4T0XU02P280qE-dyq_rw");'
-              ></div>
-            </div>
+            <div id="center-list" class="px-4 py-3 grid gap-3"></div>
 
-            <p class="text-[#111418] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">
-              Find support centers near you that offer resources and programs tailored to cognitive health. These centers provide valuable assistance and guidance for managing
-              cognitive changes.
-            </p>
+            <div class="flex px-4 py-3">
+              <div
+                class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl object-cover"
+                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDzH3wSNKos48dF4gJKVP_tdol_zkb6KCtAKgmIeecUvK-aUe9Pq5a45bTJomNi--soSDjN7D-VDMyI_YrqAUMmvuuOvD0ppbwROqm9OkOp2ZEmJNF73indqoIwB6CCEgoeV3-k4KLOLzOIMcQBSAFMySbiRT8m8KrgnMsrMVbp_n3lkLrglOWTwmIO3POUat8k4wv77hIAz-OaWod1rYU9pF2QzMwPTfmM8373ayAcmEV84_1DbmOXcR4T0XU02P280qE-dyq_rw");'
+              ></div>
+            </div>
 
-            <h2 class="text-[#111418] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Importance of Early Intervention</h2>
-            <p class="text-[#111418] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">
-              Early detection and treatment of cognitive issues can slow progression and improve quality of life. Regular assessments and proactive management are key to
-              maintaining cognitive well-being. Don't hesitate to seek professional advice and support.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+            <p class="text-[#111418] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">
+              가까운 지원 센터를 찾아 인지 건강에 맞는 자료와 프로그램을 제공받으세요. 이런 센터들은 인지 변화 관리에 소중한 도움과 안내를 제공합니다.
+            </p>
 
-        <script>
-      const $ = (sel) => document.querySelector(sel);
-      let map;
+            <h2 class="text-[#111418] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">조기 개입의 중요성</h2>
+            <p class="text-[#111418] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">
+              인지 문제의 조기 발견과 치료는 진행을 늦추고 삶의 질을 개선할 수 있습니다. 정기적인 평가와 적극적인 관리가 인지 웰빙을 유지하는 핵심입니다. 주저하지 마시고 전문가의 조언과 지원을 받아보세요.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
 
-      // 지도 SDK 로드 확인
-      function ensureNaverLoaded() {
-        if (typeof naver === "undefined" || !naver.maps) {
-          console.error("[NAVER] maps.js가 로드되지 않았습니다. ncpClientId 또는 허용 도메인 설정을 확인하세요.");
-          alert("지도를 불러오지 못했습니다. 콘솔 오류를 확인해 주세요.");
-          return false;
-        }
-        return true;
-      }
+<script>
+      const $ = (sel) => document.querySelector(sel);
+      let map;
+      let markers = [];
 
-      // 폴백 좌표(서울시청)
-      const DEFAULT_CENTER = { lat: 37.5665, lng: 126.9780 };
+      // 상태 업데이트 함수
+      function updateStatus(message, isError = false) {
+        const statusEl = $("#status");
+        statusEl.innerHTML = `<p class="text-sm ${isError ? 'text-red-700' : 'text-blue-700'}">${message}</p>`;
+        if (isError) {
+          statusEl.className = "mx-4 mb-3 p-3 rounded-lg bg-red-50 border border-red-200";
+        }
+      }
 
-      // 공통 초기화
-      function initMapAt(lat, lng, isFallback) {
-        if (!ensureNaverLoaded()) return;
+      // 지도 SDK 로드 확인
+      function ensureNaverLoaded() {
+        if (typeof naver === "undefined" || !naver.maps) {
+          console.error("[NAVER] maps.js가 로드되지 않았습니다.");
+          updateStatus("지도를 불러오지 못했습니다. 네이버 지도 API 설정을 확인해 주세요.", true);
+          return false;
+        }
+        return true;
+      }
 
-        const center = new naver.maps.LatLng(lat, lng);
-        map = new naver.maps.Map('map', { center, zoom: 14 });
+      // 폴백 좌표(서울시청)
+      const DEFAULT_CENTER = { lat: 37.5665, lng: 126.9780 };
 
-        new naver.maps.Marker({
-          position: center,
-          map,
-          title: isFallback ? "기본 위치(서울시청)" : "현재 위치"
-        });
+      // 샘플 치매안심센터 데이터 (API 호출 실패시 사용)
+      const SAMPLE_CENTERS = [
+        {
+          title: "종로구 치매안심센터",
+          address: "서울특별시 종로구 종로1길 36",
+          telephone: "02-2148-3395",
+          lat: 37.5735,
+          lng: 126.9788
+        },
+        {
+          title: "중구 치매안심센터", 
+          address: "서울특별시 중구 다산로 120",
+          telephone: "02-2263-2844",
+          lat: 37.5641,
+          lng: 126.9979
+        },
+        {
+          title: "용산구 치매안심센터",
+          address: "서울특별시 용산구 녹사평대로 150",
+          telephone: "02-2199-8163",
+          lat: 37.5386,
+          lng: 126.9756
+        },
+        {
+          title: "성동구 치매안심센터",
+          address: "서울특별시 성동구 고산자로 270",
+          telephone: "02-2286-7062",
+          lat: 37.5509,
+          lng: 127.0411
+        },
+        {
+          title: "광진구 치매안심센터",
+          address: "서울특별시 광진구 자양로 117",
+          telephone: "02-450-1650",
+          lat: 37.5388,
+          lng: 127.0844
+        }
+      ];
 
-        if (isFallback) {
-          const listEl = $("#center-list");
-          const tip = document.createElement("div");
-          tip.className = "text-sm text-[#60758a]";
-          tip.textContent = "현재 위치 사용이 거부/실패되어 기본 위치(서울시청)로 안내 중입니다.";
-          listEl.prepend(tip);
-        }
+      // 공통 초기화
+      function initMapAt(lat, lng, isFallback) {
+        if (!ensureNaverLoaded()) return;
 
-        loadNearbyCenters(lat, lng);
-      }
+        try {
+          updateStatus(isFallback ? "기본 위치로 지도를 표시합니다." : "현재 위치로 지도를 표시합니다.");
 
-      // 현재 위치 기반(실패 시 폴백)
-      function initMapWithMyLocation() {
-        if (!navigator.geolocation) {
-          console.warn("지오로케이션 미지원 → 폴백");
-          initMapAt(DEFAULT_CENTER.lat, DEFAULT_CENTER.lng, true);
-          return;
-        }
+          const center = new naver.maps.LatLng(lat, lng);
+          map = new naver.maps.Map('map', { 
+            center, 
+            zoom: 14,
+            mapTypeControl: true
+          });
 
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            const lat = pos.coords.latitude;
-            const lng = pos.coords.longitude;
-            initMapAt(lat, lng, false);
-          },
-          (err) => {
-            console.error("geolocation error:", err);
-            alert("위치 권한을 허용하지 않아 기본 위치로 안내합니다.");
-            initMapAt(DEFAULT_CENTER.lat, DEFAULT_CENTER.lng, true);
-          },
-          { enableHighAccuracy: true, timeout: 10000 }
-        );
-      }
+          // 현재 위치 마커
+          new naver.maps.Marker({
+            position: center,
+            map,
+            title: isFallback ? "기본 위치(서울시청)" : "현재 위치",
+            icon: {
+              content: '<div style="background: #ff4444; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>',
+              anchor: new naver.maps.Point(6, 6)
+            }
+          });
 
-      function renderCenters(items) {
-        const listEl = $("#center-list");
-        listEl.innerHTML = "";
+          if (isFallback) {
+            const listEl = $("#center-list");
+            const tip = document.createElement("div");
+            tip.className = "text-sm text-[#60758a] mb-2";
+            tip.textContent = "현재 위치 사용이 거부되어 기본 위치(서울시청)로 안내 중입니다.";
+            listEl.prepend(tip);
+          }
 
-        items.forEach((it) => {
-          const latlng = new naver.maps.LatLng(it.lat, it.lng);
-          const marker = new naver.maps.Marker({ position: latlng, map });
-          const info = new naver.maps.InfoWindow({
-            content: `
-              <div style="padding:8px;max-width:240px;">
-                <div style="font-weight:700;margin-bottom:4px;">${it.title}</div>
-                <div style="font-size:12px;color:#444;">${it.roadAddress || it.address || ""}</div>
-                <div style="font-size:12px;color:#444;">${it.telephone || ""}</div>
-                <div style="margin-top:6px;font-size:12px;">거리: ${it.distance_km.toFixed(1)} km</div>
-              </div>`
-          });
-          naver.maps.Event.addListener(marker, "click", () => {
-            info.open(map, marker);
-          });
+          // 센터 데이터 로딩 시작
+          loadNearbyCenters(lat, lng);
 
-          const card = document.createElement("div");
-          card.className = "rounded-lg border border-[#dbe0e6] p-3";
-          card.innerHTML = `
-            <div class="text-sm font-bold">${it.title}</div>
-            <div class="text-sm text-[#60758a]">${it.roadAddress || it.address || ""}</div>
-            <div class="text-sm">${it.telephone || ""}</div>
-            <div class="text-xs text-[#60758a]">약 ${it.distance_km.toFixed(1)} km</div>
-          `;
-          listEl.appendChild(card);
-        });
-      }
+        } catch (error) {
+          console.error("지도 초기화 오류:", error);
+          updateStatus("지도 초기화 중 오류가 발생했습니다.", true);
+        }
+      }
 
-// 두 지점 사이의 거리를 계산하는 Haversine 공식
-function haversine_km(lat1, lon1, lat2, lon2) {
-  const R = 6371; // 지구의 반경 (단위: km)
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-            Math.sin(dLon/2) * Math.sin(dLon/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  return R * c;
-}
+      // 현재 위치 기반(실패 시 폴백)
+      function initMapWithMyLocation() {
+        if (!navigator.geolocation) {
+          console.warn("지오로케이션 미지원 → 폴백");
+          initMapAt(DEFAULT_CENTER.lat, DEFAULT_CENTER.lng, true);
+          return;
+        }
 
-async function loadNearbyCenters(lat, lng) {
-  try {
-    // 공공데이터포털 API 키와 엔드포인트
-    const serviceKey = 'rOsGTN3QAVdhOCg8qpAg9Phh8MZLgO7JZZQrTqNGdGOfsnUG9%2F2VNTVGVWaRcfdbAxngGnHsL96lOEbNI48VRg%3D%3D';
-    const endpoint = '15138421/v1/uddi:8008b803-2419-4066-a3bb-8449371f3cff';
+        updateStatus("현재 위치를 확인하는 중입니다...");
 
-    // 💡 CORS 오류를 우회하기 위한 프록시 서버 사용
-    // https://cors-anywhere.herokuapp.com/ 대신에 allorigins를 사용합니다.
-    const proxyUrl = 'https://api.allorigins.win/get?url=';
-    const apiUrl = `http://api.odcloud.kr/api/${endpoint}?serviceKey=${serviceKey}&page=1&perPage=1000`; 
-    
-    // 최종 요청 URL
-    const url = `${proxyUrl}${encodeURIComponent(apiUrl)}`;
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            initMapAt(lat, lng, false);
+          },
+          (err) => {
+            console.error("geolocation error:", err);
+            initMapAt(DEFAULT_CENTER.lat, DEFAULT_CENTER.lng, true);
+          },
+          { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+        );
+      }
 
-    const r = await fetch(url);
-    if (!r.ok) {
-      const txt = await r.text();
-      console.error("API error:", r.status, txt);
-      alert("센터 정보를 불러오는 중 오류가 발생했습니다.\n" + txt);
-      return;
-    }
-    
-    const rawData = await r.json();
-    const data = JSON.parse(rawData.contents); // allorigins 프록시의 경우 contents 필드에 실제 JSON이 있음
+      function clearMarkers() {
+        markers.forEach(marker => marker.setMap(null));
+        markers = [];
+      }
 
-    const allCenters = data.data || [];
+      function renderCenters(items, userLat, userLng) {
+        if (!map) return;
 
-    const filteredCenters = allCenters.map(center => {
-      // 위도와 경도 데이터가 없는 경우 건너뛰기
-      if (!center.위도 || !center.경도) {
-        return null;
-      }
-      
-      const dist = haversine_km(lat, lng, parseFloat(center.위도), parseFloat(center.경도));
-      return {
-        title: center.치매안심센터명,
-        address: center.주소1,
-        roadAddress: center.주소1,  // 주소1을 도로명 주소로 임시 사용
-        telephone: center.전화번호, // 공공데이터에서 제공하는 전화번호 필드
-        lat: parseFloat(center.위도),
-        lng: parseFloat(center.경도),
-        distance_km: dist
-      };
-    }).filter(center => center !== null).sort((a, b) => a.distance_km - b.distance_km);
+        clearMarkers();
+        const listEl = $("#center-list");
+        listEl.innerHTML = "";
 
-    renderCenters(filteredCenters.slice(0, 20)); // 가장 가까운 20개만 표시
+        if (items.length === 0) {
+          listEl.innerHTML = '<div class="text-center text-gray-500 py-4">주변에 치매안심센터를 찾을 수 없습니다.</div>';
+          return;
+        }
 
-  } catch (e) {
-    console.error("Failed to load centers:", e);
-    alert("센터 정보를 불러오는 중 오류가 발생했습니다.");
-  }
-}
-      // 시작!
-      initMapWithMyLocation();
-    </script>
+        updateStatus(`${items.length}개의 치매안심센터를 찾았습니다.`);
+
+        items.forEach((it, index) => {
+          try {
+            const latlng = new naver.maps.LatLng(it.lat, it.lng);
+            const marker = new naver.maps.Marker({ 
+              position: latlng, 
+              map,
+              title: it.title,
+              icon: {
+                content: `<div style="background: #0066cc; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">${index + 1}</div>`,
+                anchor: new naver.maps.Point(15, 15)
+              }
+            });
+            
+            markers.push(marker);
+            
+            const info = new naver.maps.InfoWindow({
+              content: `
+                <div style="padding: 12px; max-width: 280px; line-height: 1.4;">
+                  <div style="font-weight: 700; margin-bottom: 6px; color: #333;">${it.title}</div>
+                  <div style="font-size: 13px; color: #666; margin-bottom: 4px;">${it.roadAddress || it.address || ""}</div>
+                  <div style="font-size: 13px; color: #666; margin-bottom: 6px;">${it.telephone || ""}</div>
+                  <div style="font-size: 12px; color: #0066cc; font-weight: 600;">거리: ${it.distance_km.toFixed(1)} km</div>
+                </div>`
+            });
+            
+            naver.maps.Event.addListener(marker, "click", () => {
+              info.open(map, marker);
+            });
+
+            const card = document.createElement("div");
+            card.className = "rounded-lg border border-[#dbe0e6] p-4 hover:bg-gray-50 cursor-pointer transition-colors";
+            card.innerHTML = `
+              <div class="flex items-start gap-3">
+                <div class="bg-[#0066cc] text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0">${index + 1}</div>
+                <div class="flex-1">
+                  <div class="text-base font-bold text-[#111418] mb-1">${it.title}</div>
+                  <div class="text-sm text-[#60758a] mb-1">${it.roadAddress || it.address || ""}</div>
+                  <div class="text-sm text-[#60758a] mb-2">${it.telephone || ""}</div>
+                  <div class="text-xs text-[#0066cc] font-semibold">약 ${it.distance_km.toFixed(1)} km</div>
+                </div>
+              </div>
+            `;
+            
+            card.addEventListener('click', () => {
+              map.setCenter(latlng);
+              map.setZoom(16);
+              info.open(map, marker);
+            });
+            
+            listEl.appendChild(card);
+          } catch (error) {
+            console.error("센터 렌더링 오류:", error, it);
+          }
+        });
+      }
+
+      // 두 지점 사이의 거리를 계산하는 Haversine 공식
+      function haversine_km(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+      }
+
+      async function loadNearbyCenters(lat, lng) {
+        updateStatus("치매안심센터 정보를 불러오는 중입니다...");
+        
+        try {
+          // 먼저 샘플 데이터로 거리 계산해서 보여주기
+          const sampleWithDistance = SAMPLE_CENTERS.map(center => ({
+            ...center,
+            distance_km: haversine_km(lat, lng, center.lat, center.lng)
+          })).sort((a, b) => a.distance_km - b.distance_km);
+
+          renderCenters(sampleWithDistance, lat, lng);
+
+          // 실제 API 호출 시도 (실패해도 샘플 데이터는 유지)
+          try {
+            const serviceKey = 'rOsGTN3QAVdhOCg8qpAg9Phh8MZLgO7JZZQrTqNGdG0fsnUG9%2F2VNTVGVWaRcfdbAxngGnHsL96IOEbNI48VRg%3D%3D';
+            const endpoint = '15138421/v1/uddi:8008b803-2419-4066-a3bb-8449371f3cff';
+            
+            // 여러 프록시 시도
+            const proxies = [
+              'https://api.codetabs.com/v1/proxy?quest=',
+              'https://api.allorigins.win/get?url=',
+              'https://corsproxy.io/?'
+            ];
+            
+            const apiUrl = `http://api.odcloud.kr/api/${endpoint}?serviceKey=${serviceKey}&page=1&perPage=1000`;
+            
+            let data = null;
+            for (const proxy of proxies) {
+              try {
+                const url = `${proxy}${encodeURIComponent(apiUrl)}`;
+                const r = await fetch(url, { timeout: 5000 });
+                
+                if (r.ok) {
+                  const rawData = await r.json();
+                  if (proxy.includes('allorigins')) {
+                    data = JSON.parse(rawData.contents);
+                  } else {
+                    data = rawData;
+                  }
+                  break;
+                }
+              } catch (e) {
+                console.warn(`Proxy ${proxy} 실패:`, e);
+                continue;
+              }
+            }
+
+            if (data && data.data && data.data.length > 0) {
+              const allCenters = data.data.map(center => {
+                const latValue = parseFloat(center.위도);
+                const lngValue = parseFloat(center.경도);
+                
+                if (isNaN(latValue) || isNaN(lngValue)) {
+                  return null;
+                }
+                
+                const dist = haversine_km(lat, lng, latValue, lngValue);
+                return {
+                  title: center.치매안심센터명,
+                  address: center.주소1,
+                  roadAddress: center.주소1,
+                  telephone: center.전화번호,
+                  lat: latValue,
+                  lng: lngValue,
+                  distance_km: dist
+                };
+              }).filter(center => center !== null)
+                .sort((a, b) => a.distance_km - b.distance_km);
+
+              if (allCenters.length > 0) {
+                renderCenters(allCenters.slice(0, 20), lat, lng);
+                updateStatus(`실제 데이터로 ${Math.min(allCenters.length, 20)}개 센터를 표시했습니다.`);
+              }
+            } else {
+              updateStatus("API에서 데이터를 받지 못해 샘플 데이터를 표시합니다.");
+            }
+
+          } catch (apiError) {
+            console.warn("API 호출 실패, 샘플 데이터 사용:", apiError);
+            updateStatus("API 연결에 실패했지만 샘플 데이터로 센터 정보를 표시합니다.");
+          }
+
+        } catch (error) {
+          console.error("센터 로딩 전체 실패:", error);
+          updateStatus("센터 정보를 불러오는 중 오류가 발생했습니다.", true);
+        }
+      }
+      
+      // DOM 로드 완료 후 시작
+      document.addEventListener('DOMContentLoaded', function() {
+        // 네이버 지도 SDK 로드 대기
+        const checkNaverMaps = () => {
+          if (typeof naver !== 'undefined' && naver.maps) {
+            initMapWithMyLocation();
+          } else {
+            setTimeout(checkNaverMaps, 100);
+          }
+        };
+        checkNaverMaps();
+      });
+</script>
+
 </body>
 </html>
