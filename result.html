@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Manrope%3Awght%40400%3B500%3B700%3B800&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900"
+    />
+
+    <title>result</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+</head>
+<body>
+    <div class="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden" style='font-family: Manrope, "Noto Sans", sans-serif;'>
+      <div class="layout-container flex h-full grow flex-col">
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f2f5] px-10 py-3">
+          <div class="flex items-center gap-4 text-[#111418]">
+            <div class="size-4">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g clip-path="url(#clip0_6_330)">
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z"
+                    fill="currentColor"
+                  ></path>
+                </g>
+                <defs>
+                  <clipPath id="clip0_6_330"><rect width="48" height="48" fill="white"></rect></clipPath>
+                </defs>
+              </svg>
+            </div>
+            <h2 class="text-[#111418] text-lg font-bold leading-tight tracking-[-0.015em]">Mindful Memory</h2>
+          </div>
+          <div class="flex flex-1 justify-end gap-8">
+            <div class="flex items-center gap-9">
+              <a class="text-[#111418] text-sm font-medium leading-normal" href="#">Home</a>
+              <a class="text-[#111418] text-sm font-medium leading-normal" href="#">About</a>
+              <a class="text-[#111418] text-sm font-medium leading-normal" href="#">Services</a>
+              <a class="text-[#111418] text-sm font-medium leading-normal" href="#">Contact</a>
+            </div>
+            <button
+              class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#0d80f2] text-white text-sm font-bold leading-normal tracking-[0.015em]"
+            >
+              <span class="truncate">Get Started</span>
+            </button>
+          </div>
+        </header>
+        <div class="px-40 flex flex-1 justify-center py-5">
+          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+            <h2 class="text-[#111418] tracking-light text-[28px] font-bold leading-tight px-4 text-center pb-3 pt-5">Cognitive Assessment Results</h2>
+            <div class="flex flex-wrap gap-4 px-4 py-6">
+              <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-xl border border-[#dbe0e6] p-6">
+                <p class="text-[#111418] text-base font-medium leading-normal">Cognitive Domains</p>
+                <p class="text-[#111418] tracking-light text-[32px] font-bold leading-tight truncate">Average Score</p>
+                <div class="flex gap-1">
+                  <p class="text-[#60758a] text-base font-normal leading-normal">Current</p>
+                  <p class="text-[#078838] text-base font-medium leading-normal">+5%</p>
+                </div>
+                <div class="grid min-h-[180px] grid-flow-col gap-6 grid-rows-[1fr_auto] items-end justify-items-center px-3">
+                  <div class="border-[#60758a] bg-[#f0f2f5] border-t-2 w-full" style="height: 30%;"></div>
+                  <p class="text-[#60758a] text-[13px] font-bold leading-normal tracking-[0.015em]">Memory</p>
+                  <div class="border-[#60758a] bg-[#f0f2f5] border-t-2 w-full" style="height: 30%;"></div>
+                  <p class="text-[#60758a] text-[13px] font-bold leading-normal tracking-[0.015em]">Attention</p>
+                  <div class="border-[#60758a] bg-[#f0f2f5] border-t-2 w-full" style="height: 90%;"></div>
+                  <p class="text-[#60758a] text-[13px] font-bold leading-normal tracking-[0.015em]">Language</p>
+                  <div class="border-[#60758a] bg-[#f0f2f5] border-t-2 w-full" style="height: 70%;"></div>
+                  <p class="text-[#60758a] text-[13px] font-bold leading-normal tracking-[0.015em]">Visuospatial</p>
+                  <div class="border-[#60758a] bg-[#f0f2f5] border-t-2 w-full" style="height: 100%;"></div>
+                  <p class="text-[#60758a] text-[13px] font-bold leading-normal tracking-[0.015em]">Executive</p>
+                </div>
+              </div>
+            </div>
+            <p class="text-[#111418] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">
+              Your cognitive assessment indicates some challenges in the memory and executive function domains. These areas are crucial for daily tasks such as remembering
+              appointments and planning activities. It's important to address these early to maintain cognitive health.
+            </p>
+            <h2 class="text-[#111418] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Next Steps</h2>
+            <p class="text-[#111418] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">
+              To support your cognitive health, we recommend consulting with a healthcare professional. Early intervention can significantly improve outcomes. Additionally,
+              consider exploring cognitive training programs and lifestyle adjustments.
+            </p>
+            <h2 class="text-[#111418] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Nearby Support Centers</h2>
+            <div class="flex px-4 py-3">
+              <div
+                class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl object-cover"
+                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDzH3wSNKos48dF4gJKVP_tdol_zkb6KCtAKgmIeecUvK-aUe9Pq5a45bTJomNi--soSDjN7D-VDMyI_YrqAUMmvuuOvD0ppbwROqm9OkOp2ZEmJNF73indqoIwB6CCEgoeV3-k4KLOLzOIMcQBSAFMySbiRT8m8KrgnMsrMVbp_n3lkLrglOWTwmIO3POUat8k4wv77hIAz-OaWod1rYU9pF2QzMwPTfmM8373ayAcmEV84_1DbmOXcR4T0XU02P280qE-dyq_rw");'
+              ></div>
+            </div>
+            <p class="text-[#111418] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">
+              Find support centers near you that offer resources and programs tailored to cognitive health. These centers provide valuable assistance and guidance for managing
+              cognitive changes.
+            </p>
+            <h2 class="text-[#111418] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Importance of Early Intervention</h2>
+            <p class="text-[#111418] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">
+              Early detection and treatment of cognitive issues can slow progression and improve quality of life. Regular assessments and proactive management are key to
+              maintaining cognitive well-being. Don't hesitate to seek professional advice and support.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+</body>
+</html>
