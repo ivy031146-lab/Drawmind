@@ -140,125 +140,156 @@
 
 
             <h2 class="text-[#111418] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">
-              주변 지원 센터
-            </h2>
+             주변 지원 센터
+            </h2>
 
-            <!-- 지도 상자 -->
-            <div id="map" class="mx-4 rounded-xl border border-[#dbe0e6]" style="height: 420px;"></div>
+                        <div id="map" class="mx-4 rounded-xl border border-[#dbe0e6]" style="height: 420px;"></div>
 
-            <!-- 리스트 출력 영역(옵션) -->
-            <div id="center-list" class="px-4 py-3 grid gap-3"></div>
+                        <div id="center-list" class="px-4 py-3 grid gap-3"></div>
 
-            <div class="flex px-4 py-3">
-              <div
-                class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl object-cover"
-                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDzH3wSNKos48dF4gJKVP_tdol_zkb6KCtAKgmIeecUvK-aUe9Pq5a45bTJomNi--soSDjN7D-VDMyI_YrqAUMmvuuOvD0ppbwROqm9OkOp2ZEmJNF73indqoIwB6CCEgoeV3-k4KLOLzOIMcQBSAFMySbiRT8m8KrgnMsrMVbp_n3lkLrglOWTwmIO3POUat8k4wv77hIAz-OaWod1rYU9pF2QzMwPTfmM8373ayAcmEV84_1DbmOXcR4T0XU02P280qE-dyq_rw");'
-              ></div>
-            </div>
-            <p class="text-[#111418] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">
-              Find support centers near you that offer resources and programs tailored to cognitive health. These centers provide valuable assistance and guidance for managing
-              cognitive changes.
-            </p>
-            <h2 class="text-[#111418] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Importance of Early Intervention</h2>
-            <p class="text-[#111418] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">
-              Early detection and treatment of cognitive issues can slow progression and improve quality of life. Regular assessments and proactive management are key to
-              maintaining cognitive well-being. Don't hesitate to seek professional advice and support.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <script>
-  // 간단 유틸
-  const $ = (sel) => document.querySelector(sel);
+            <div class="flex px-4 py-3">
+              <div
+                class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl object-cover"
+                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDzH3wSNKos48dF4gJKVP_tdol_zkb6KCtAKgmIeecUvK-aUe9Pq5a45bTJomNi--soSDjN7D-VDMyI_YrqAUMmvuuOvD0ppbwROqm9OkOp2ZEmJNF73indqoIwB6CCEgoeV3-k4KLOLzOIMcQBSAFMySbiRT8m8KrgnMsrMVbp_n3lkLrglOWTwmIO3POUat8k4wv77hIAz-OaWod1rYU9pF2QzMwPTfmM8373ayAcmEV84_1DbmOXcR4T0XU02P280qE-dyq_rw");'
+              ></div>
+            </div>
 
-  // 지도/마커 전역 변수
-  let map;
+            <p class="text-[#111418] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">
+              Find support centers near you that offer resources and programs tailored to cognitive health. These centers provide valuable assistance and guidance for managing
+              cognitive changes.
+            </p>
 
-  // 1) 브라우저에서 현재 위치 얻기
-  function initMapWithMyLocation() {
-    if (!navigator.geolocation) {
-      alert("브라우저가 위치 정보를 지원하지 않습니다. 주소로 검색해주세요.");
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
+            <h2 class="text-[#111418] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Importance of Early Intervention</h2>
+            <p class="text-[#111418] text-base font-normal leading-normal pb-3 pt-1 px-4 text-center">
+              Early detection and treatment of cognitive issues can slow progression and improve quality of life. Regular assessments and proactive management are key to
+              maintaining cognitive well-being. Don't hesitate to seek professional advice and support.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
 
-        // 2) 지도 초기화
-        map = new naver.maps.Map('map', {
-          center: new naver.maps.LatLng(lat, lng),
-          zoom: 14
-        });
+        <script>
+      const $ = (sel) => document.querySelector(sel);
+      let map;
 
-        // 내 위치 마커
-        new naver.maps.Marker({
-          position: new naver.maps.LatLng(lat, lng),
-          map,
-          title: "현재 위치"
-        });
+      // 지도 SDK 로드 확인
+      function ensureNaverLoaded() {
+        if (typeof naver === "undefined" || !naver.maps) {
+          console.error("[NAVER] maps.js가 로드되지 않았습니다. ncpClientId 또는 허용 도메인 설정을 확인하세요.");
+          alert("지도를 불러오지 못했습니다. 콘솔 오류를 확인해 주세요.");
+          return false;
+        }
+        return true;
+      }
 
-        // 3) 백엔드(프록시)로 센터 목록 요청
-        loadNearbyCenters(lat, lng);
-      },
-      (err) => {
-        console.error(err);
-        alert("위치 권한을 허용해 주세요. (또는 주소로 검색)");
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
-  }
+      // 폴백 좌표(서울시청)
+      const DEFAULT_CENTER = { lat: 37.5665, lng: 126.9780 };
 
-  // 결과를 지도와 리스트에 뿌리기
-  function renderCenters(items) {
-    const listEl = $("#center-list");
-    listEl.innerHTML = "";
+      // 공통 초기화
+      function initMapAt(lat, lng, isFallback) {
+        if (!ensureNaverLoaded()) return;
 
-    items.forEach((it) => {
-      const latlng = new naver.maps.LatLng(it.lat, it.lng);
-      const marker = new naver.maps.Marker({ position: latlng, map });
-      const info = new naver.maps.InfoWindow({
-        content: `
-          <div style="padding:8px;max-width:240px;">
-            <div style="font-weight:700;margin-bottom:4px;">${it.title}</div>
-            <div style="font-size:12px;color:#444;">${it.roadAddress || it.address || ""}</div>
-            <div style="font-size:12px;color:#444;">${it.telephone || ""}</div>
-            <div style="margin-top:6px;font-size:12px;">거리: ${it.distance_km.toFixed(1)} km</div>
-          </div>`
-      });
-      naver.maps.Event.addListener(marker, "click", () => {
-        info.open(map, marker);
-      });
+        const center = new naver.maps.LatLng(lat, lng);
+        map = new naver.maps.Map('map', { center, zoom: 14 });
 
-      const card = document.createElement("div");
-      card.className = "rounded-lg border border-[#dbe0e6] p-3";
-      card.innerHTML = `
-        <div class="text-sm font-bold">${it.title}</div>
-        <div class="text-sm text-[#60758a]">${it.roadAddress || it.address || ""}</div>
-        <div class="text-sm">${it.telephone || ""}</div>
-        <div class="text-xs text-[#60758a]">약 ${it.distance_km.toFixed(1)} km</div>
-      `;
-      listEl.appendChild(card);
-    });
-  }
+        new naver.maps.Marker({
+          position: center,
+          map,
+          title: isFallback ? "기본 위치(서울시청)" : "현재 위치"
+        });
 
-  // 백엔드 프록시 호출
-  async function loadNearbyCenters(lat, lng) {
-    try {
-      const r = await fetch(`http://localhost:8001/api/centers?lat=${lat}&lng=${lng}`);
+        if (isFallback) {
+          const listEl = $("#center-list");
+          const tip = document.createElement("div");
+          tip.className = "text-sm text-[#60758a]";
+          tip.textContent = "현재 위치 사용이 거부/실패되어 기본 위치(서울시청)로 안내 중입니다.";
+          listEl.prepend(tip);
+        }
 
-      const data = await r.json();
-      renderCenters(data.items || []);
-    } catch (e) {
-      console.error(e);
-      alert("센터 정보를 불러오는 중 오류가 발생했습니다.");
-    }
-  }
+        loadNearbyCenters(lat, lng);
+      }
 
-  // 시작!
-  initMapWithMyLocation();
-</script>
+      // 현재 위치 기반(실패 시 폴백)
+      function initMapWithMyLocation() {
+        if (!navigator.geolocation) {
+          console.warn("지오로케이션 미지원 → 폴백");
+          initMapAt(DEFAULT_CENTER.lat, DEFAULT_CENTER.lng, true);
+          return;
+        }
 
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            initMapAt(lat, lng, false);
+          },
+          (err) => {
+            console.error("geolocation error:", err);
+            alert("위치 권한을 허용하지 않아 기본 위치로 안내합니다.");
+            initMapAt(DEFAULT_CENTER.lat, DEFAULT_CENTER.lng, true);
+          },
+          { enableHighAccuracy: true, timeout: 10000 }
+        );
+      }
+
+      function renderCenters(items) {
+        const listEl = $("#center-list");
+        listEl.innerHTML = "";
+
+        items.forEach((it) => {
+          const latlng = new naver.maps.LatLng(it.lat, it.lng);
+          const marker = new naver.maps.Marker({ position: latlng, map });
+          const info = new naver.maps.InfoWindow({
+            content: `
+              <div style="padding:8px;max-width:240px;">
+                <div style="font-weight:700;margin-bottom:4px;">${it.title}</div>
+                <div style="font-size:12px;color:#444;">${it.roadAddress || it.address || ""}</div>
+                <div style="font-size:12px;color:#444;">${it.telephone || ""}</div>
+                <div style="margin-top:6px;font-size:12px;">거리: ${it.distance_km.toFixed(1)} km</div>
+              </div>`
+          });
+          naver.maps.Event.addListener(marker, "click", () => {
+            info.open(map, marker);
+          });
+
+          const card = document.createElement("div");
+          card.className = "rounded-lg border border-[#dbe0e6] p-3";
+          card.innerHTML = `
+            <div class="text-sm font-bold">${it.title}</div>
+            <div class="text-sm text-[#60758a]">${it.roadAddress || it.address || ""}</div>
+            <div class="text-sm">${it.telephone || ""}</div>
+            <div class="text-xs text-[#60758a]">약 ${it.distance_km.toFixed(1)} km</div>
+          `;
+          listEl.appendChild(card);
+        });
+      }
+
+      async function loadNearbyCenters(lat, lng) {
+        try {
+          const url = `http://localhost:8001/api/centers?lat=${lat}&lng=${lng}`;
+          const r = await fetch(url);
+          if (!r.ok) {
+            const txt = await r.text();
+            console.error("API error:", r.status, txt);
+            alert("센터 정보를 불러오는 중 오류가 발생했습니다.\n${txt}");
+            return;
+          }
+          const data = await r.json();
+          if (data.error) {
+            console.error("API returned error:", data);
+            alert("API 인증/요청에 문제가 있습니다. (콘솔 확인)");
+            return;
+          }
+          renderCenters(data.items || []);
+        } catch (e) {
+          console.error(e);
+          alert("센터 정보를 불러오는 중 네트워크 오류가 발생했습니다.");
+        }
+      }
+
+      // 시작!
+      initMapWithMyLocation();
+    </script>
 </body>
 </html>
