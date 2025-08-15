@@ -284,12 +284,14 @@ async function loadNearbyCenters(lat, lng) {
       
       const dist = haversine_km(lat, lng, parseFloat(center.위도), parseFloat(center.경도));
       return {
-        title: center.치매안심센터명,
-        address: center.주소1,
-        lat: parseFloat(center.위도),
-        lng: parseFloat(center.경도),
-        distance_km: dist
-      };
+        title: center.치매안심센터명,
+        address: center.주소1,
+        roadAddress: center.주소1,  // 주소1을 도로명 주소로 임시 사용
+        telephone: center.전화번호, // 공공데이터에서 제공하는 전화번호 필드
+        lat: parseFloat(center.위도),
+        lng: parseFloat(center.경도),
+        distance_km: dist
+      };
     }).filter(center => center !== null).sort((a, b) => a.distance_km - b.distance_km);
 
     renderCenters(filteredCenters.slice(0, 20)); // 가장 가까운 20개만 표시
