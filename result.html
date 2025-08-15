@@ -49,7 +49,7 @@
             </div>
           </div>
         </header>
-        <div class="px-40 flex flex-1 justify-center py-5">
+                <div class="px-40 flex flex-1 justify-center py-5">
           <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
 
             <div class="flex flex-col gap-4 px-4 py-6">
@@ -111,8 +111,8 @@
             </div>
 
 
-            <h2 class="text-[#111418] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">
-             주변 지원 센터
+            <h2 class="text-[#111418] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">
+             주변 지원 센터
             </h2>
 
                         <div id="map" class="mx-4 rounded-xl border border-[#dbe0e6]" style="height: 420px;"></div>
@@ -237,29 +237,68 @@
         });
       }
 
-      async function loadNearbyCenters(lat, lng) {
-        try {
-          const url = `http://localhost:8001/api/centers?lat=${lat}&lng=${lng}`;
-          const r = await fetch(url);
-          if (!r.ok) {
-            const txt = await r.text();
-            console.error("API error:", r.status, txt);
-            alert("센터 정보를 불러오는 중 오류가 발생했습니다.\n${txt}");
-            return;
-          }
-          const data = await r.json();
-          if (data.error) {
-            console.error("API returned error:", data);
-            alert("API 인증/요청에 문제가 있습니다. (콘솔 확인)");
-            return;
-          }
-          renderCenters(data.items || []);
-        } catch (e) {
-          console.error(e);
-          alert("센터 정보를 불러오는 중 네트워크 오류가 발생했습니다.");
-        }
-      }
+// 두 지점 사이의 거리를 계산하는 Haversine 공식
+function haversine_km(lat1, lon1, lat2, lon2) {
+  const R = 6371; // 지구의 반경 (단위: km)
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+}
 
+async function loadNearbyCenters(lat, lng) {
+  try {
+    // 공공데이터포털 API 키와 엔드포인트
+    const serviceKey = 'rOsGTN3QAVdhOCg8qpAg9Phh8MZLgO7JZZQrTqNGdGOfsnUG9%2F2VNTVGVWaRcfdbAxngGnHsL96lOEbNI48VRg%3D%3D';
+    const endpoint = '15138421/v1/uddi:8008b803-2419-4066-a3bb-8449371f3cff';
+
+    // 💡 CORS 오류를 우회하기 위한 프록시 서버 사용
+    // https://cors-anywhere.herokuapp.com/ 대신에 allorigins를 사용합니다.
+    const proxyUrl = 'https://api.allorigins.win/get?url=';
+    const apiUrl = `http://api.odcloud.kr/api/${endpoint}?serviceKey=${serviceKey}&page=1&perPage=1000`; 
+    
+    // 최종 요청 URL
+    const url = `${proxyUrl}${encodeURIComponent(apiUrl)}`;
+
+    const r = await fetch(url);
+    if (!r.ok) {
+      const txt = await r.text();
+      console.error("API error:", r.status, txt);
+      alert("센터 정보를 불러오는 중 오류가 발생했습니다.\n" + txt);
+      return;
+    }
+    
+    const rawData = await r.json();
+    const data = JSON.parse(rawData.contents); // allorigins 프록시의 경우 contents 필드에 실제 JSON이 있음
+
+    const allCenters = data.data || [];
+
+    const filteredCenters = allCenters.map(center => {
+      // 위도와 경도 데이터가 없는 경우 건너뛰기
+      if (!center.위도 || !center.경도) {
+        return null;
+      }
+      
+      const dist = haversine_km(lat, lng, parseFloat(center.위도), parseFloat(center.경도));
+      return {
+        title: center.치매안심센터명,
+        address: center.주소1,
+        lat: parseFloat(center.위도),
+        lng: parseFloat(center.경도),
+        distance_km: dist
+      };
+    }).filter(center => center !== null).sort((a, b) => a.distance_km - b.distance_km);
+
+    renderCenters(filteredCenters.slice(0, 20)); // 가장 가까운 20개만 표시
+
+  } catch (e) {
+    console.error("Failed to load centers:", e);
+    alert("센터 정보를 불러오는 중 오류가 발생했습니다.");
+  }
+}
       // 시작!
       initMapWithMyLocation();
     </script>
